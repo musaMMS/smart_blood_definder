@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "906112039266",
+    "firebase_url": "https://smart-blood-9e24d-default-rtdb.firebaseio.com",
+    "project_id": "smart-blood-9e24d",
+    "storage_bucket": "smart-blood-9e24d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906112039266:android:20d3f37f534e3f1d2b143b",
+        "android_client_info": {
+          "package_name": "com.example.smart_blood_medicine_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo2yuusux00km8rt2WhqVOK20Gj36j3LU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
