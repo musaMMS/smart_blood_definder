@@ -30,8 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     loadUserName();
-    initOneSignal();
-    getOneSignalToken();  // OneSignal Token সংগ্রহ করতে কল করা হয়েছে
+    setupOneSignalListeners();
+    getOneSignalToken();
   }
 
   Future<void> loadUserName() async {
@@ -41,47 +41,35 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void initOneSignal() async {
-    // OneSignal ইনিশিয়ালাইজ করা হচ্ছে
-    OneSignal.shared.setAppId("c10dd787-9845-4b2e-977d-6083ac2e7e14");
-
-    // Foreground তে নোটিফিকেশন আসলে সেটি প্রক্রিয়া করতে হবে
-    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) {
-      event.complete(event.notification);
+  void setupOneSignalListeners() {
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
       setState(() {
         notificationCount++;
       });
     });
 
-    // Notification খুললে এটি প্রক্রিয়া হবে
-    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+    OneSignal.Notifications.addClickListener((event) {
       setState(() {
         notificationCount = 0;
       });
+
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ViewConnectionsScreen()),
       );
     });
-
-    // OneSignal ডিভাইস স্টেট পাওয়া যাচ্ছে কিনা সেটি চেক করুন
-    var deviceState = await OneSignal.shared.getDeviceState();
-    print('Device state: ${deviceState?.userId}');
   }
-
 
   void getOneSignalToken() async {
     try {
-      var status = await OneSignal.shared.getDeviceState();
-      var oneSignalToken = status?.userId; // OneSignal Token বা User ID পাওয়া যাচ্ছে
-
-      if (oneSignalToken != null) {
-        print('📲 OneSignal Device Token: $oneSignalToken');
+      final userId = OneSignal.User.pushSubscription.id;
+      if (userId != null) {
+        print('📲 OneSignal Device Token: $userId');
       } else {
-        print('❌ OneSignal Token পাওয়া যায়নি');
+        print('❌ Token পাওয়া যায়নি');
       }
     } catch (e) {
-      print('❌ OneSignal Token সংগ্রহে সমস্যা: $e');
+      print('❌ Token সংগ্রহে সমস্যা: $e');
     }
   }
 
@@ -187,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             leading: const Icon(Icons.person, color: Colors.redAccent),
                             title: Text('👋 Hello, $userName!',
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                            subtitle: Text('Welcome to the app!',
+                            subtitle: const Text('Welcome to the app!',
                                 style: TextStyle(fontSize: 14, color: Colors.grey)),
                           ),
                         ),

@@ -3,21 +3,20 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class NotificationController with ChangeNotifier {
   int _unreadCount = 0;
-
   int get unreadCount => _unreadCount;
 
   NotificationController() {
-    // ফোরগ্রাউন্ডে নোটিফিকেশন আসলে
-    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) {
+    // 🔔 Foreground notification handler
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
       _unreadCount++;
       notifyListeners();
 
-      // Notif টা দেখাও
-      event.complete(event.notification);
+      // ✅ New SDK no longer needs event.complete(...)
+      // Notification auto-displayed
     });
 
-    // যখন ইউজার নোটিফিকেশন ওপেন করে
-    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+    // 🔔 When user clicks notification
+    OneSignal.Notifications.addClickListener((event) {
       _unreadCount = 0;
       notifyListeners();
     });
@@ -28,3 +27,4 @@ class NotificationController with ChangeNotifier {
     notifyListeners();
   }
 }
+
