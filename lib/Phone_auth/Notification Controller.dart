@@ -1,30 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class NotificationController with ChangeNotifier {
+  // ✅ Singleton instance
+  static final NotificationController instance = NotificationController._internal();
+
+  // ✅ Private constructor
+  NotificationController._internal();
+
+  // ✅ Notifications List
+  final List<NotificationItem> _notifications = [];
   int _unreadCount = 0;
+
+  List<NotificationItem> get notifications => _notifications;
   int get unreadCount => _unreadCount;
 
-  NotificationController() {
-    // 🔔 Foreground notification handler
-    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-      _unreadCount++;
-      notifyListeners();
-
-      // ✅ New SDK no longer needs event.complete(...)
-      // Notification auto-displayed
-    });
-
-    // 🔔 When user clicks notification
-    OneSignal.Notifications.addClickListener((event) {
-      _unreadCount = 0;
-      notifyListeners();
-    });
+  // ✅ Add Notification
+  void addNotification(String title, String body, DateTime time) {
+    _notifications.insert(
+      0,
+      NotificationItem(title: title, body: body, time: time),
+    );
+    _unreadCount++;
+    notifyListeners();
   }
 
+  // ✅ Clear Unread Count
   void clearCount() {
     _unreadCount = 0;
     notifyListeners();
   }
 }
 
+class NotificationItem {
+  final String title;
+  final String body;
+  final DateTime time;
+
+  NotificationItem({
+    required this.title,
+    required this.body,
+    required this.time,
+  });
+}

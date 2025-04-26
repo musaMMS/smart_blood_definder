@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:smart_blood_definder/Phone_auth/Notification_Ui.dart';
 import '../Phone_auth/viewcooection_screen.dart';
 import '../donation/AddDonation_Screen.dart';
 import '../donation/Donar_history_view.dart';
 import 'ViewRequestScreen.dart';
 import 'package:provider/provider.dart';
 import 'ViewConnectionsScreen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,36 +35,73 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    loadUserName();
+    fetchUserNameFromPrefs();
+    loadNotificationCount();
     setupOneSignalListeners();
     getOneSignalToken();
   }
 
-  Future<void> loadUserName() async {
+// ✅ Fetch user name from SharedPreferences
+  Future<void> fetchUserNameFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? name = prefs.getString('userName');
+    print('🟡 Fetched userName: $name');
+
+    if (name != null) {
+      setState(() {
+        userName = name;
+      });
+    } else {
+      print('🔴 userName not found in SharedPreferences');
+    }
+  }
+
+// ✅ Load saved notification count from SharedPreferences
+  void loadNotificationCount() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      userName = prefs.getString('userName');
+      notificationCount = prefs.getInt('notifCount') ?? 0;
     });
   }
 
+// ✅ OneSignal Listeners for notifications
   void setupOneSignalListeners() {
-    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    // Increment & save notification count on foreground message
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int count = prefs.getInt('notifCount') ?? 0;
+      count++;
+      await prefs.setInt('notifCount', count);
+
       setState(() {
-        notificationCount++;
+        notificationCount = count;
       });
     });
 
-    OneSignal.Notifications.addClickListener((event) {
+    // Reset count and navigate on notification click
+    OneSignal.Notifications.addClickListener((event) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('notifCount', 0);
+
       setState(() {
         notificationCount = 0;
+        isLoading = true; // Show the progress bar when notification clicked
+      });
+
+      // Simulate progress (you can replace this with actual task)
+      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds before transitioning
+
+      setState(() {
+        isLoading = false; // Hide the progress bar after the task is done
       });
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ViewConnectionsScreen()),
+        MaterialPageRoute(builder: (context) => NotificationListScreen()),
       );
     });
   }
+
 
   void getOneSignalToken() async {
     try {
@@ -119,12 +162,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Function to send connection request and notification
   void sendConnectionRequest(Map<String, dynamic> user) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? senderPhone = prefs.getString('userPhone');
       String? senderName = prefs.getString('userName');
       String? senderBloodGroup = prefs.getString('bloodGroup');
+      String? senderOneSignalToken = prefs.getString('onesignalToken'); // User's OneSignal Token
 
       if (senderPhone == null || senderName == null || senderBloodGroup == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -133,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
+      // Send the request to Firestore
       await FirebaseFirestore.instance.collection('connections').add({
         'senderName': senderName,
         'senderPhone': senderPhone,
@@ -140,6 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
         'receiverPhone': user['phone'],
         'timestamp': Timestamp.now(),
       });
+
+      // Get the OneSignal Token for the receiver (assumed that this is stored in Firestore under receiver's document)
+      String receiverOneSignalToken = user['onesignalToken']; // Assuming this is saved in Firestore under user data
+
+      if (receiverOneSignalToken.isNotEmpty) {
+        // Send Push Notification using OneSignal API
+        await sendOneSignalNotification(receiverOneSignalToken, senderName);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('✅ Request sent successfully!')),
@@ -151,6 +205,44 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+
+// Function to send OneSignal Notification
+// ----------------------
+// Function to send notification
+  Future<void> sendOneSignalNotification(String receiverToken, String senderName) async {
+    try {
+      const String oneSignalAppId = 'c10dd787-9845-4b2e-977d-6083ac2e7e14'; // তোমার App ID
+      const String restApiKey = 'YOUR-ONESIGNAL-REST-API-KEY'; // OneSignal REST API KEY (IMPORTANT)
+
+      var url = Uri.parse('https://onesignal.com/api/v1/notifications');
+
+      var body = jsonEncode({
+        "app_id": oneSignalAppId,
+        "include_player_ids": [receiverToken],
+        "headings": {"en": "Friend Request"},
+        "contents": {"en": "$senderName has sent you a friend request."},
+      });
+
+      var response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Basic $restApiKey", // REST API Key দিয়ে Authorize করতে হবে
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print('📲 Notification sent successfully!');
+      } else {
+        print('❌ Failed to send notification: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Error sending notification: $e');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               });
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ViewConnectionsScreen()),
+                                MaterialPageRoute(builder: (context) => const NotificationListScreen()),
                               );
                             },
                             icon: const Icon(Icons.notifications_active_rounded),
@@ -261,6 +353,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
+
+
+
+                //another
                 Wrap(
                   alignment: WrapAlignment.spaceAround,
                   spacing: 10,
