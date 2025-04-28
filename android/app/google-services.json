@@ -1,22 +1,21 @@
 {
   "project_info": {
-    "project_number": "906112039266",
-    "firebase_url": "https://smart-blood-9e24d-default-rtdb.firebaseio.com",
-    "project_id": "smart-blood-9e24d",
-    "storage_bucket": "smart-blood-9e24d.firebasestorage.app"
+    "project_number": "138838571907",
+    "project_id": "smart-blood-finder-b8a4a",
+    "storage_bucket": "smart-blood-finder-b8a4a.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:906112039266:android:20d3f37f534e3f1d2b143b",
+        "mobilesdk_app_id": "1:138838571907:android:616b2ea5addf510cbad4b6",
         "android_client_info": {
-          "package_name": "com.example.smart_blood_medicine_finder"
+          "package_name": "com.example.smart_blood_definder"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAo2yuusux00km8rt2WhqVOK20Gj36j3LU"
+          "current_key": "AIzaSyB1Hok_WHJqO5OQcWo2qaniGWHb8xP0A4A"
         }
       ],
       "services": {

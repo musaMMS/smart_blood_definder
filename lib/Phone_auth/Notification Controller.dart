@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 
 class NotificationController with ChangeNotifier {
-  // ✅ Singleton instance
-  static final NotificationController instance = NotificationController._internal();
-
-  // ✅ Private constructor
-  NotificationController._internal();
-
-  // ✅ Notifications List
   final List<NotificationItem> _notifications = [];
   int _unreadCount = 0;
 

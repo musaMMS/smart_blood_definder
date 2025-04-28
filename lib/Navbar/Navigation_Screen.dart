@@ -1,59 +1,110 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smart_blood_definder/Request/Friend_Request_Accept_Reject_System.dart';
+import 'package:smart_blood_definder/Request/Function/Frnr_list_View.dart';
+import 'package:smart_blood_definder/Request/Function/chat.dart';
 import '../Medicine/medicin_search_screen.dart';
 import '../Phone_auth/SendConnectRequestScreen.dart';
+import '../Request/Function/Pending_Requests.dart';
 import '../screens/Home_Screen.dart';
+import 'package:http/http.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
-
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
   int _selectedIndex = 0;
+  int _unreadMessageCount = 0;
 
   final List<Widget> _screens = [
     HomeScreen(),
     SearchMedicineScreen(),
-    // AddDonationScreen(donorId: '') ,// placeholder
-    // SendConnectRequestScreen(),
+    FriendListScreen(),
+    // ChatScreen(friendId: 'friendId', friendName: 'Friend Name', currentUserPhone: '', friendPhone: '',),
+    // FriendRequestsScreen(),
   ];
 
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 3) {
+        // যদি Chat Screen এ যাই, তাহলে unread message reset করবে
+        setState(() {
+          _unreadMessageCount = 0;
+        });
+      }
     });
   }
 
-  final List<String> _titles = [
-    'Request Blood',
-    'Find Medicine',
-    'Donation History',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    listenForUnreadMessages();
+  }
+
+  void listenForUnreadMessages() {
+    FirebaseFirestore.instance
+        .collection('messages')
+        .snapshots()
+        .listen((snapshot) {
+      int totalUnread = 0;
+
+      for (var doc in snapshot.docs) {
+        doc.reference
+            .collection('chats')
+            .where('isSeen', isEqualTo: false)
+            .get()
+            .then((querySnapshot) {
+          totalUnread += querySnapshot.docs.length;
+          setState(() {
+            _unreadMessageCount = totalUnread;
+          });
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text(_titles[_selectedIndex])),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabTapped,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.bloodtype),
             label: 'Blood',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.medication),
             label: 'Medicine',
           ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Friends',
+          ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
+            icon: badges.Badge(
+              showBadge: _unreadMessageCount > 0,
+              badgeContent: Text(
+                '$_unreadMessageCount',
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
+              child: const Icon(Icons.chat),
+            ),
+            label: 'Chats',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_add),
+            label: 'Requests',
           ),
         ],
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

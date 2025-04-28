@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:provider/provider.dart';
 // Screens
 import 'Phone_auth/Notification_Ui.dart';
 import 'screens/Login_screen.dart';
@@ -15,12 +14,7 @@ import 'Navbar/Navigation_Screen.dart';
 
 // Widget & Controller
 import 'widget/Color.dart';
-import 'Phone_auth/Notification Controller.dart';
-
-// ✅ Global NavigatorKey
-// Screens
-import 'Navbar/Navigation_Screen.dart';
-import 'Phone_auth/Notification_Ui.dart';
+import 'Phone_auth/Notification Controller.dart'; // ✅ NotificationController import
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -30,55 +24,33 @@ void main() async {
   // ✅ Initialize Firebase
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: 'AIzaSyAo2yuusux00km8rt2WhqVOK20Gj36j3LU',
-      appId: '1:906112039266:android:20d3f37f534e3f1d2b143b',
-      messagingSenderId: '906112039266',
-      projectId: 'smart-blood-9e24d',
+      apiKey: 'AIzaSyB1Hok_WHJqO5OQcWo2qaniGWHb8xP0A4A',
+      appId: '1:138838571907:android:616b2ea5addf510cbad4b6',
+      messagingSenderId: '138838571907',
+      projectId: 'smart-blood-finder-b8a4a',
     ),
   );
-
-  // ✅ Initialize OneSignal
-  OneSignal.Debug.setLogLevel(OSLogLevel.none); // Logs off
-  OneSignal.initialize("c10dd787-9845-4b2e-977d-6083ac2e7e14");
-
-  // ✅ Ask for Notification permission
-  await OneSignal.Notifications.requestPermission(true);
-
-  // ✅ Handle notification received when the app is in the foreground
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
     final title = event.notification.title ?? 'No Title';
     final body = event.notification.body ?? 'No Body';
     final time = DateTime.now();
-    NotificationController.instance?.addNotification(title, body, time);
+
+    final controller = navigatorKey.currentContext!.read<NotificationController>();
+    controller.addNotification(title, body, time);
   });
 
-  // ✅ Handle notification click
-  OneSignal.Notifications.addClickListener((event) {
-    navigatorKey.currentState?.pushNamed('/notifications');
-  });
 
-  // ✅ Retrieve Device Player ID (NEW way for 5.0.4)
-  String? playerId = OneSignal.User.pushSubscription.id;
-  print('🔔 OneSignal Player ID: $playerId');
+  // ✅ Initialize OneSignal
+  OneSignal.Debug.setLogLevel(OSLogLevel.none);
+  OneSignal.initialize("27eda07b-303a-466b-b567-749ab2793607");
+  await OneSignal.Notifications.requestPermission(true);
 
-  if (playerId != null) {
-    // ✅ Save Player ID Locally using SharedPreferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('onesignalToken', playerId);
-    print('✅ Player ID saved in SharedPreferences.');
-
-    // ✅ If user is logged in, save Player ID to Firestore
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.uid)
-          .update({'onesignalToken': playerId});
-      print('✅ Player ID updated in Firestore.');
-    }
-  }
-
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => NotificationController(), // ✅ PROVIDER দিচ্ছি এখানে
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -102,4 +74,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
