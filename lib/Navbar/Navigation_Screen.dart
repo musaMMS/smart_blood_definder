@@ -1,12 +1,9 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smart_blood_definder/Request/Friend_Request_Accept_Reject_System.dart';
-import 'package:smart_blood_definder/Request/Function/Frnr_list_View.dart';
-import 'package:smart_blood_definder/Request/Function/chat.dart';
+import 'package:smart_blood_definder/Phone_auth/viewcooection_screen.dart';
 import '../Medicine/medicin_search_screen.dart';
 import '../Phone_auth/SendConnectRequestScreen.dart';
-import '../Request/Function/Pending_Requests.dart';
 import '../screens/Home_Screen.dart';
 import 'package:http/http.dart';
 
@@ -21,18 +18,16 @@ class _NavigationScreenState extends State<NavigationScreen> {
   int _unreadMessageCount = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    SearchMedicineScreen(),
-    FriendListScreen(),
-    // ChatScreen(friendId: 'friendId', friendName: 'Friend Name', currentUserPhone: '', friendPhone: '',),
-    // FriendRequestsScreen(),
+    HomeScreen(),                  // index 0
+    SearchMedicineScreen(),       // index 1
+    ViewConnectionsScreen(),       // index 2
+    // PendingRequestsScreen(),      // index 3 <-- এটাকে নতুন যোগ করা হলো
   ];
 
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (index == 3) {
-        // যদি Chat Screen এ যাই, তাহলে unread message reset করবে
+      if (index == 5) {
         setState(() {
           _unreadMessageCount = 0;
         });
@@ -88,21 +83,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
             icon: Icon(Icons.people),
             label: 'Friends',
           ),
-          BottomNavigationBarItem(
-            icon: badges.Badge(
-              showBadge: _unreadMessageCount > 0,
-              badgeContent: Text(
-                '$_unreadMessageCount',
-                style: const TextStyle(color: Colors.white, fontSize: 10),
-              ),
-              child: const Icon(Icons.chat),
-            ),
-            label: 'Chats',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_add),
-            label: 'Requests',
-          ),
+          // const BottomNavigationBarItem(
+          //   icon: Icon(Icons.person_add),
+          //   label: 'Requests',
+          // ),
         ],
         type: BottomNavigationBarType.fixed,
       ),

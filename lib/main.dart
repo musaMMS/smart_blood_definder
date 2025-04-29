@@ -5,6 +5,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_blood_definder/Phone_auth/viewcooection_screen.dart';
 // Screens
 import 'Phone_auth/Notification_Ui.dart';
 import 'screens/Login_screen.dart';
@@ -24,10 +25,10 @@ void main() async {
   // ✅ Initialize Firebase
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: 'AIzaSyB1Hok_WHJqO5OQcWo2qaniGWHb8xP0A4A',
-      appId: '1:138838571907:android:616b2ea5addf510cbad4b6',
-      messagingSenderId: '138838571907',
-      projectId: 'smart-blood-finder-b8a4a',
+      apiKey: 'AIzaSyDnl_bYbAHkkOx5wbS83mLABawQIc3wbF0',
+      appId: '1:600386780335:android:0b5e179319499c2f50e85a',
+      messagingSenderId: '600386780335',
+      projectId: 'smart-blood-definder',
     ),
   );
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/home': (context) => NavigationScreen(),
         '/notifications': (context) => NotificationListScreen(),
+        '/frqest':(context) => ViewConnectionsScreen(),
       },
     );
   }

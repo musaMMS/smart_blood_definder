@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "138838571907",
-    "project_id": "smart-blood-finder-b8a4a",
-    "storage_bucket": "smart-blood-finder-b8a4a.firebasestorage.app"
+    "project_number": "600386780335",
+    "project_id": "smart-blood-definder",
+    "storage_bucket": "smart-blood-definder.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:138838571907:android:616b2ea5addf510cbad4b6",
+        "mobilesdk_app_id": "1:600386780335:android:0b5e179319499c2f50e85a",
         "android_client_info": {
           "package_name": "com.example.smart_blood_definder"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB1Hok_WHJqO5OQcWo2qaniGWHb8xP0A4A"
+          "current_key": "AIzaSyDnl_bYbAHkkOx5wbS83mLABawQIc3wbF0"
         }
       ],
       "services": {

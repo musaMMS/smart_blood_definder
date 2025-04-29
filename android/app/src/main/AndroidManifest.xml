@@ -4,9 +4,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
+        android:enableOnBackInvokedCallback="true"
         android:label="smart_blood_definder"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -37,6 +38,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
