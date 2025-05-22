@@ -2,6 +2,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_blood_definder/Phone_auth/viewcooection_screen.dart';
+import 'package:smart_blood_definder/screens/Home_screen.dart';
 import '../Medicine/medicin_search_screen.dart';
 import '../Phone_auth/SendConnectRequestScreen.dart';
 import '../screens/Blood_Finder_Screen.dart';
@@ -18,7 +19,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   int _unreadMessageCount = 0;
 
   final List<Widget> _screens = [
-    BloodFinderScreen(),                  // index 0
+    HomeScreen(),// index 0
     SearchMedicineScreen(),       // index 1
     ViewConnectionsScreen(),       // index 2
     // PendingRequestsScreen(),      // index 3 <-- এটাকে নতুন যোগ করা হলো
