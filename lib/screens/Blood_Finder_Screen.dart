@@ -9,14 +9,14 @@ import '../donation/AddDonation_Screen.dart';
 import '../donation/Donar_history_view.dart';
 import 'ViewRequestScreen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class BloodFinderScreen extends StatefulWidget {
+  const BloodFinderScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _BloodFinderScreenState createState() => _BloodFinderScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _BloodFinderScreenState extends State<BloodFinderScreen> {
   final TextEditingController cityController = TextEditingController();
   String? selectedBloodGroup;
   List<Map<String, dynamic>> searchResults = [];

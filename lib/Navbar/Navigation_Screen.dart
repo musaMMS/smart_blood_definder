@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_blood_definder/Phone_auth/viewcooection_screen.dart';
 import '../Medicine/medicin_search_screen.dart';
 import '../Phone_auth/SendConnectRequestScreen.dart';
-import '../screens/Home_Screen.dart';
+import '../screens/Blood_Finder_Screen.dart';
 import 'package:http/http.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   int _unreadMessageCount = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),                  // index 0
+    BloodFinderScreen(),                  // index 0
     SearchMedicineScreen(),       // index 1
     ViewConnectionsScreen(),       // index 2
     // PendingRequestsScreen(),      // index 3 <-- এটাকে নতুন যোগ করা হলো

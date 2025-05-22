@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_blood_definder/Phone_auth/viewcooection_screen.dart';
+import 'package:smart_blood_definder/screens/Blood_Finder_Screen.dart';
 // Screens
 import 'Phone_auth/Notification_Ui.dart';
 import 'screens/Login_screen.dart';
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/register': (context) => RegisterScreen(),
         '/login': (context) => LoginScreen(),
+        '/blood':(context)=>BloodFinderScreen(),
         '/home': (context) => NavigationScreen(),
         '/notifications': (context) => NotificationListScreen(),
         '/frqest':(context) => ViewConnectionsScreen(),
