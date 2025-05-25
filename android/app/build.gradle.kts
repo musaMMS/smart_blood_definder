@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "com.example.smart_blood_definder"
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
